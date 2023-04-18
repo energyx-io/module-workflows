@@ -11,7 +11,7 @@ on:
 env:
   TFLINT_VERSION: v0.39.3
   TFSEC_VERSION: latest
-  TFC_VERSION: 1.3.7
+  TFC_VERSION: 1.4.5
   
 jobs:
   tflint:
