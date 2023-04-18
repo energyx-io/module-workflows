@@ -1,0 +1,107 @@
+name: Module CI & Documentation
+
+on:
+  workflow_call:
+    inputs:
+      module_level:
+        description: Possible values are [1|2|3|4]. Indicates the module level for which this workflow should run.
+        required: true
+        type: number
+
+env:
+  TFLINT_VERSION: v0.39.3
+  TFSEC_VERSION: latest
+  TFC_VERSION: 1.3.7
+  
+jobs:
+  tflint:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout 
+      uses: actions/checkout@v3
+      
+    - name: TFLint - Setup
+      uses: terraform-linters/setup-tflint@v2
+      with:
+        tflint_version: ${{ env.TFLINT_VERSION }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: TFLint - Version
+      run: tflint --version
+
+    - name: TFLint - Initialize
+      run: tflint --init
+
+    - name: TFLint - Run
+      run: tflint -f compact
+  
+  tfsec:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: TFSec
+      uses: aquasecurity/tfsec-action@v1.0.0
+      with:
+        soft_fail: true
+        version: ${{ env.TFSEC_VERSION }}
+        
+  checkov:
+    name: Policy Checks
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        quiet: false
+        soft_fail: false
+        framework: terraform
+        output_format: sarif
+        download_external_modules: false
+        log_level: WARNING
+        
+  terraform:
+    needs: [tflint, tfsec, checkov]
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Terraform - Setup
+      uses: hashicorp/setup-terraform@v2
+      with: 
+        terraform_version: ${{ env.TFC_VERSION }}
+        cli_config_credentials_hostname: ${{ secrets.TFC_ADDR }}
+        cli_config_credentials_token: ${{ secrets.TFC_TOKEN }}
+
+    - name: Terraform - Init
+      run: terraform init
+
+    - name: Terraform - Validate
+      run: terraform validate -no-color
+      
+    - name: Terraform - Speculative Plan
+      if: ${{ inputs.module_level == 4 }}
+      run: terraform plan
+
+  documentation:
+    if: ${{ inputs.module_level != 4 }}
+    name: Documentation
+    needs: [tflint, tfsec, checkov]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Render Documentation
+      uses: terraform-docs/gh-actions@main
+      with:
+        output-method: replace
+        git-push: "true"
