@@ -54,7 +54,7 @@ jobs:
       uses: aquasecurity/tfsec-action@v1.0.0
       with:
         soft_fail: true
-        working-directory: ${{ inputs.terraform_working_directory }}
+        working_directory: ${{ inputs.terraform_working_directory }}
         version: ${{ env.TFSEC_VERSION }}
         
   checkov:
@@ -69,7 +69,7 @@ jobs:
       with:
         quiet: false
         soft_fail: false
-        working-directory: ${{ inputs.terraform_working_directory }}
+        directory: ${{ inputs.terraform_working_directory }}
         framework: terraform
         output_format: sarif
         download_external_modules: false
@@ -99,8 +99,8 @@ jobs:
       run: terraform validate -no-color
       
     - name: Terraform - Speculative Plan
-      working-directory: ${{ inputs.terraform_working_directory }}
       if: ${{ inputs.module_level == 4 }}
+      working-directory: ${{ inputs.terraform_working_directory }}
       run: terraform plan
 
   documentation:
@@ -117,4 +117,4 @@ jobs:
       with:
         output-method: replace
         git-push: "true"
-        working-directory: ${{ inputs.terraform_working_directory }}
+        working-dir: ${{ inputs.terraform_working_directory }}
