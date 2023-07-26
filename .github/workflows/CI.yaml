@@ -113,7 +113,7 @@ jobs:
     if: ${{ inputs.module_level != 4 }}
     name: Documentation
     needs: [tflint, tfsec, checkov]
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
 #    runs-on: ubuntu-latest
     steps:
     - name: Checkout
