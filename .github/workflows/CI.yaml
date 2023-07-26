@@ -24,7 +24,8 @@ env:
 jobs:
   tflint:
     name: Linting
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+#    runs-on: ubuntu-latest
     steps:
     - name: Checkout 
       uses: actions/checkout@v3
@@ -49,7 +50,8 @@ jobs:
   
   tfsec:
     name: Security Checks
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+#    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -63,7 +65,8 @@ jobs:
         
   checkov:
     name: Policy Checks
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+#    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -82,7 +85,8 @@ jobs:
   terraform:
     needs: [tflint, tfsec, checkov]
     name: Terraform Validation
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+#    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -111,7 +115,8 @@ jobs:
     if: ${{ inputs.module_level != 4 }}
     name: Documentation
     needs: [tflint, tfsec, checkov]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
+#    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
