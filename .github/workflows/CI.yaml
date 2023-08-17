@@ -61,6 +61,7 @@ jobs:
         soft_fail: true
         working_directory: ${{ inputs.terraform_working_directory }}
         version: ${{ env.TFSEC_VERSION }}
+        format: lovely
         additional_args: 
           "--ignore-hcl-errors --run-statistics"
         
