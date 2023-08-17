@@ -62,9 +62,7 @@ jobs:
         working_directory: ${{ inputs.terraform_working_directory }}
         version: ${{ env.TFSEC_VERSION }}
         additional_args: 
-          "--ignore-hcl-errors"
-          "--gif"
-          "--run-statistics"
+          "--ignore-hcl-errors --gif --run-statistics"
         
   checkov:
     name: Policy Checks
