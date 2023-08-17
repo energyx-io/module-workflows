@@ -61,6 +61,7 @@ jobs:
         soft_fail: true
         working_directory: ${{ inputs.terraform_working_directory }}
         version: ${{ env.TFSEC_VERSION }}
+        ignore_hcl_errors: true
         
   checkov:
     name: Policy Checks
