@@ -63,6 +63,8 @@ jobs:
         version: ${{ env.TFSEC_VERSION }}
         additional_args: 
           "--ignore-hcl-errors"
+          "--gif"
+          "--run-statistics"
         
   checkov:
     name: Policy Checks
