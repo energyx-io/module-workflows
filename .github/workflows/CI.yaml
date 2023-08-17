@@ -66,7 +66,7 @@ jobs:
     #       "--ignore-hcl-errors --run-statistics"
 
     - name: TFSec
-      uses: aquasecurity/tfsec-sarif-action@main
+      uses: aquasecurity/tfsec-sarif-action@v0.1.4
       with:
         sarif_file: tfsec.sarif         
 
