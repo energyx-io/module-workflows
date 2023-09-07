@@ -1,0 +1,131 @@
+name: Packer CI & Documentation
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_call:
+    inputs:
+      module_level:
+        description: Possible values are [1|2|3|4|p]. Indicates the module level for which this workflow should run.
+        required: true
+        type: number
+      terraform_working_directory:
+        description: The working directory terraform uses in a monorepo with multiple workspaces.
+        type: string  
+        default: '.'
+
+env:
+  TFLINT_VERSION: v0.39.3
+  TFSEC_VERSION: latest
+  TFC_VERSION: 1.5.5
+  HCP_CLIENT_ID: 'G0wLwGHwrmAq77Tzis9FR1dE52T8V0Xp'
+  HCP_CLIENT_SECRET: 'i58nX0X-aeSJYJJOJQoBH_dRc0pJqWdEFkKPVmrMSvbk3BfCZV1oOTzyrHdY2g5f'
+  
+# jobs:
+#   tflint:
+#     name: Linting
+#     runs-on: [self-hosted, Linux, X64]
+# #    runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout 
+#       uses: actions/checkout@v3
+      
+#     - name: TFLint - Setup
+#       uses: terraform-linters/setup-tflint@v2
+#       with:
+#         tflint_version: ${{ env.TFLINT_VERSION }}
+#         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+#     - name: TFLint - Version
+#       working-directory: ${{ inputs.terraform_working_directory }}
+#       run: tflint --version
+
+#     - name: TFLint - Initialize
+#       working-directory: ${{ inputs.terraform_working_directory }}
+#       run: tflint --init
+
+#     - name: TFLint - Run
+#       working-directory: ${{ inputs.terraform_working_directory }}
+#       run: tflint -f compact
+  
+#   tfsec:
+#     name: Security Checks
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v3
+
+#     - name: TFSec
+#       uses: aquasecurity/tfsec-sarif-action@v0.1.4
+#       with:
+#         sarif_file: tfsec.sarif
+#         working_directory: ${{ inputs.terraform_working_directory }}
+#         tfsec_version: ${{ env.TFSEC_VERSION }}
+#         tfsec_args: 
+#           "--ignore-hcl-errors"  
+        
+#   checkov:
+#     name: Policy Checks
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v3
+
+#     - name: Checkov
+#       uses: bridgecrewio/checkov-action@v12.1347.0
+#       with:
+#         quiet: false
+#         soft_fail: false
+#         directory: ${{ inputs.terraform_working_directory }}
+#         framework: terraform
+#         output_format: sarif
+#         download_external_modules: false
+#         log_level: WARNING
+        
+#   terraform:
+#     needs: [tflint, tfsec, checkov]
+#     name: Terraform Validation
+#     runs-on: [self-hosted, Linux, X64]
+# #    runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v3
+
+#     - name: Terraform - Setup
+#       uses: hashicorp/setup-terraform@v2
+#       with: 
+#         terraform_version: ${{ env.TFC_VERSION }}
+#         cli_config_credentials_hostname: ${{ secrets.TFC_ADDR }}
+#         cli_config_credentials_token: ${{ secrets.TFC_TOKEN }}
+
+#     - name: Terraform - Init
+#       working-directory: ${{ inputs.terraform_working_directory }}
+#       run: terraform init
+
+#     - name: Terraform - Validate
+#       working-directory: ${{ inputs.terraform_working_directory }}
+#       run: terraform validate -no-color
+      
+#     - name: Terraform - Speculative Plan
+#       if: ${{ inputs.module_level == 4 }}
+#       working-directory: ${{ inputs.terraform_working_directory }}
+#       run: terraform plan
+
+#   documentation:
+#     if: ${{ inputs.module_level != 4 }}
+#     name: Documentation
+#     needs: [tflint, tfsec, checkov]
+#     runs-on: ubuntu-latest
+# #    runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v3
+
+#     - name: Render Documentation
+#       uses: terraform-docs/gh-actions@main
+#       with:
+#         output-method: replace
+#         git-push: "true"
+#         working-dir: ${{ inputs.terraform_working_directory }}
