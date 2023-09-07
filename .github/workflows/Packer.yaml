@@ -8,7 +8,7 @@ on:
   workflow_call:
     inputs:
       module_level:
-        description: Possible values are [1|2|3|4|p]. Indicates the module level for which this workflow should run.
+        description: Possible values are [1|2|3|4]. Indicates the module level for which this workflow should run.
         required: true
         type: number
       terraform_working_directory:
@@ -27,6 +27,7 @@ env:
 jobs:
   hcp-packer:
     runs-on: ubuntu-latest
+    if: ${{ inputs.module_level == 4 }}
     name: Run Packer
     steps:
       - name: Checkout
