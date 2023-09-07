@@ -52,6 +52,7 @@ jobs:
 
   tflint:
     name: Linting
+    needs: [hcp-packer]
     runs-on: [self-hosted, Linux, X64]
 #    runs-on: ubuntu-latest
     steps:
@@ -78,6 +79,7 @@ jobs:
   
   tfsec:
     name: Security Checks
+    needs: [hcp-packer]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -94,6 +96,7 @@ jobs:
         
   checkov:
     name: Policy Checks
+    needs: [hcp-packer]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
