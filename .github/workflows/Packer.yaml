@@ -15,6 +15,10 @@ on:
         description: The working directory terraform uses in a monorepo with multiple workspaces.
         type: string  
         default: '.'
+      packer_working_directory:
+        description: The working directory for packer builds.
+        type: string  
+        default: 'ubuntu.pkr.hcl'
 
 env:
   TFLINT_VERSION: v0.39.3
@@ -32,20 +36,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
         id: setup
         with:
           version: ${{ env.PACKER_VERSION }}
+          
       - name: Run `packer init`
         id: init
-        run: "packer init ./image.pkr.hcl"
+        run: "packer init ./${{ inputs.packer_working_directory }}"
+        
       - name: Run `packer validate`
         id: validate
-        run: "packer validate ./image.pkr.hcl"
+        run: "packer validate ./${{ inputs.packer_working_directory }}"
 
       - name: Build Artifact
-        run: packer build -color=false -on-error=abort ./image.pkr.hcl
+        run: packer build -color=false -on-error=abort ./${{ inputs.packer_working_directory }}
         env:
           HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
           HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
