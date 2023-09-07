@@ -20,9 +20,35 @@ env:
   TFLINT_VERSION: v0.39.3
   TFSEC_VERSION: latest
   TFC_VERSION: 1.5.5
-  HCP_CLIENT_ID: 'G0wLwGHwrmAq77Tzis9FR1dE52T8V0Xp'
-  HCP_CLIENT_SECRET: 'i58nX0X-aeSJYJJOJQoBH_dRc0pJqWdEFkKPVmrMSvbk3BfCZV1oOTzyrHdY2g5f'
-  
+  # HCP_CLIENT_ID: 'G0wLwGHwrmAq77Tzis9FR1dE52T8V0Xp'
+  # HCP_CLIENT_SECRET: 'i58nX0X-aeSJYJJOJQoBH_dRc0pJqWdEFkKPVmrMSvbk3BfCZV1oOTzyrHdY2g5f'
+  PACKER_VERSION: latest
+
+jobs:
+  hcp-packer:
+    runs-on: ubuntu-latest
+    name: Run Packer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: ${{ env.PACKER_VERSION }}
+      - name: Run `packer init`
+        id: init
+        run: "packer init ./image.pkr.hcl"
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate ./image.pkr.hcl"
+
+      - name: Build Artifact
+        run: packer build -color=false -on-error=abort ./image.pkr.hcl
+        env:
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
+          HCP_PACKER_BUILD_FINGERPRINT: "run.id.${{ github.run_id }}.run.attempt.${{ github.run_attempt }}"
 # jobs:
 #   tflint:
 #     name: Linting
