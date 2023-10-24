@@ -119,7 +119,7 @@ jobs:
     - name: Terraform - Speculative Plan
       if: ${{ inputs.module_level == 4 }}
       working-directory: ${{ inputs.terraform_working_directory }}
-      run: terraform plan -var-file=${{ inputs.terraform_working_directory }}
+      run: terraform plan -var-file=${{ inputs.terraform_working_directory }}/terraform.tfvars
 
   documentation:
     if: ${{ inputs.module_level != 4 }}
